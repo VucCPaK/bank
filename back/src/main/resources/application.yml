@@ -1,0 +1,51 @@
+server:
+  port: 8081
+  address: localhost
+
+microservice:
+  kafka:
+    projection-group-id: projection-group
+    group-id: es_microservice
+    default-concurrency: 10
+    topics:
+      card-event-store: card-event-store
+
+spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      value-serializer: org.springframework.kafka.support.serializer.StringOrBytesSerializer
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      group-id: microservice
+
+  jpa:
+    database: postgresql
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/bank
+    username: postgres
+    password: postgres
+
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            client-id: spring
+            authorization-grant-type: authorization_code
+            provider: keycloak
+            scope:
+              - openid
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8080/auth/realms/bank
+            user-name-attribute: preferred_username
+
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/auth/realms/bank
