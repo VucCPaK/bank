@@ -4,6 +4,6 @@ import java.math.BigDecimal;
 
 public class InsufficientFundsException extends RuntimeException {
     public InsufficientFundsException(BigDecimal balance, BigDecimal withdrawAmount) {
-        super("\nBalance " + balance.toString() + " is less than withdraw amount " + withdrawAmount.toString());
+        super("\nBalance " + balance.toString() + " less than withdraw amount " + withdrawAmount.toString());
     }
 }

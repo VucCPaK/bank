@@ -44,18 +44,4 @@ public class Event {
             columnDefinition = "timestamp with time zone",
             nullable = false)
     LocalDateTime timestamp;
-
-//    private UUID id;
-//    private String aggregateId;
-//    private EventType eventType;
-//    private byte[] data;
-//    private byte[] metaData;
-//    private LocalDateTime timestamp;
-
-//    public Event(String aggregateId, EventType eventType) {
-//        this.id = UUID.randomUUID();
-//        this.aggregateId = aggregateId;
-//        this.eventType = eventType;
-//        this.timestamp = LocalDateTime.now();
-//    }
 }

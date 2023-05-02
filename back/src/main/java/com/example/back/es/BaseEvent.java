@@ -6,9 +6,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public abstract class BaseEvent {
-    protected String aggregateID;
+    protected String aggregateId;
 
-    public BaseEvent(String aggregateID) {
-        this.aggregateID = aggregateID;
+    public BaseEvent(String aggregateId) {
+        this.aggregateId = aggregateId;
     }
 }

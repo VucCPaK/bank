@@ -4,6 +4,7 @@ package com.example.back.es;
 import com.example.back.events.EventType;
 import com.example.back.exceptions.InvalidEventException;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.UUID;
 
 
 @Data
+@NoArgsConstructor
 public abstract class AggregateRoot {
 
     protected String id;

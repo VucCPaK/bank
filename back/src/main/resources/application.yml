@@ -31,6 +31,12 @@ spring:
     username: postgres
     password: postgres
 
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/bank
+      username: mongo
+      password: mongo
+
   security:
     oauth2:
       client:

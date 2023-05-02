@@ -8,15 +8,5 @@ public class BackApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(BackApplication.class, args);
-
-
-    }
-
-    abstract class A {}
-
-    class B extends A {}
-
-    private A a(A a) {
-        return new B();
     }
 }

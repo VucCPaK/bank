@@ -3,17 +3,23 @@ package com.example.back.domain;
 import com.example.back.es.Currency;
 import com.example.back.es.AggregateRoot;
 import com.example.back.es.Event;
-import com.example.back.es.SerializeUtils;
+import com.example.back.utils.SerializeUtils;
 import com.example.back.events.CreateCardEvent;
 import com.example.back.events.DepositAmountEvent;
 import com.example.back.events.EventType;
 import com.example.back.events.WithdrawAmountEvent;
 import com.example.back.exceptions.InsufficientFundsException;
 import com.example.back.exceptions.InvalidEventTypeException;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+@EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
+@Data
 public class CardAggregate extends AggregateRoot {
 
     public static final String AGGREGATE_TYPE = "CardAggregate";
