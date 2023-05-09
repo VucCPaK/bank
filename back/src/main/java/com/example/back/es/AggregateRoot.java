@@ -48,7 +48,7 @@ public abstract class AggregateRoot {
         return Event.builder()
                 .id(UUID.randomUUID())
                 .aggregateId(this.getId())
-                .eventType(eventType)
+                .eventType(eventType.name())
                 .data(Objects.isNull(data) ? new byte[]{} : data)
                 .metaData(Objects.isNull(metaData) ? new byte[]{} : metaData)
                 .timestamp(LocalDateTime.now())

@@ -1,6 +1,5 @@
 package com.example.back.es;
 
-import com.example.back.events.EventType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,7 +27,7 @@ public class Event {
     @Column(name = "event_type",
             columnDefinition = "varchar(250) check (aggregate_id <> '')",
             nullable = false)
-    EventType eventType;
+    String eventType;
 
     @Column(name = "data",
             columnDefinition = "bytea",

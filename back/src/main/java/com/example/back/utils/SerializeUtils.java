@@ -1,6 +1,5 @@
 package com.example.back.utils;
 
-import com.example.back.es.Event;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -30,14 +29,6 @@ public class SerializeUtils {
     public static <T> T deserializeFromJsonBytes(byte[] jsonBytes, Class<T> clazz) {
         try {
             return objectMapper.readValue(jsonBytes, clazz);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static Event[] deserializeEventsFromJsonBytes(final byte[] jsonBytes) {
-        try {
-            return objectMapper.readValue(jsonBytes, Event[].class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

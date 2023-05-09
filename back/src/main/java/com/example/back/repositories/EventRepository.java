@@ -17,7 +17,12 @@ public interface EventRepository extends JpaRepository<Event, String> {
     @Query("select aggregateId from Event where aggregateId = :aggregateId")
     void handleConcurrency(@Param("aggregateId") String aggregateId);
 
-//    @Query("select e from Event e where e.aggregateId = :aggregateId")
+
+    @Query("select e from Event e " +
+            "where e.aggregateId = :aggregateId and " +
+            "e.eventType = 'DEPOSIT_AMOUNT' or e.eventType = 'WITHDRAW_AMOUNT'")
+    List<Event> findAllDepositOrWithdrawOperationEventByAggregateId(@Param("aggregateId") String aggregateId);
+
     List<Event> findAllByAggregateId(String aggregateId);
 
 }

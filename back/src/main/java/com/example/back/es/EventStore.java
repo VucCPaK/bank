@@ -1,11 +1,13 @@
 package com.example.back.es;
 
+import com.example.back.domain.CardAggregate;
 import com.example.back.repositories.EventRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -36,6 +38,25 @@ public class EventStore {
 
         log.info("(load) loaded aggregate: {}", aggregate);
         return aggregate;
+    }
+
+    public BigDecimal calculateBalance(String aggregateId) {
+        var aggregate = this.getAggregate(aggregateId, CardAggregate.class);
+
+        List<Event> eventsRelativeWithDepositOrWithdrawOperation =
+                this.loadEventsRelativeWithDepositOrWithdrawOperation(aggregateId);
+
+        eventsRelativeWithDepositOrWithdrawOperation.forEach(aggregate::raiseEvent);
+
+        log.info("(calculateBalance) balance: {} of aggregate: {}", aggregate.getBalance(), aggregate.getId());
+        return aggregate.getBalance();
+    }
+
+    private List<Event> loadEventsRelativeWithDepositOrWithdrawOperation(String aggregateId) {
+        List<Event> events = eventRepository.findAllDepositOrWithdrawOperationEventByAggregateId(aggregateId);
+
+        log.info("(loadEventsRelativeWithDepositOrWithdrawOperation) loaded events: {}", events);
+        return events;
     }
 
     private List<Event> loadEvents(String aggregateId) {

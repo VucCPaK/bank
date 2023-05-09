@@ -7,7 +7,9 @@ import java.util.Optional;
 
 public interface CardRepository extends MongoRepository<CardDocument, String> {
 
-    Optional<CardDocument> findByAggregateId(String aggregateId);
+    Optional<CardDocument> findCardDocumentByAggregateId(String aggregateId);
+
+    Optional<CardDocument> findCardDocumentByCustomerId(String customerId);
 
     void deleteByAggregateId(String aggregateId);
 }

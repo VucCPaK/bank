@@ -7,10 +7,12 @@ import com.example.back.es.EventStore;
 import com.example.back.es.Projection;
 import com.example.back.events.CreateCardEvent;
 import com.example.back.events.DepositAmountEvent;
+import com.example.back.events.EventType;
 import com.example.back.events.WithdrawAmountEvent;
 import com.example.back.exceptions.CardNotFoundException;
 import com.example.back.exceptions.InsufficientFundsException;
 import com.example.back.exceptions.InvalidEventTypeException;
+import com.example.back.mappers.CardMapper;
 import com.example.back.repositories.CardRepository;
 import com.example.back.utils.SerializeUtils;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +42,6 @@ public class CardProjection implements Projection {
         log.info("(cardProjectionListener) topic: {}, offset: {}, partition: {}, data: {}",
                 metadata.topic(), metadata.offset(), metadata.partition(), Arrays.toString(data));
 
-        System.out.println(data);
         Event[] events = SerializeUtils.deserializeFromJsonBytes(data, Event[].class);
         this.processEvents(Arrays.stream(events).toList());
 
@@ -54,7 +55,7 @@ public class CardProjection implements Projection {
         } catch (Exception e) {
             cardRepository.deleteByAggregateId(events.get(0).getAggregateId());
             var aggregate = eventStore.load(events.get(0).getAggregateId(), CardAggregate.class);
-            var document = this.cardDocumentFromAggregate(aggregate);
+            var document = CardMapper.cardDocumentFromCardAggregate(aggregate);
             var savedDocument = cardRepository.save(document);
             log.info("(processEvents) saved document: {}", savedDocument);
         }
@@ -62,7 +63,7 @@ public class CardProjection implements Projection {
 
     @Override
     public void when(Event event) {
-        switch (event.getEventType()) {
+        switch (EventType.valueOf(event.getEventType())) {
             case CREATE_CARD ->
                     handle(SerializeUtils.deserializeFromJsonBytes(event.getData(), CreateCardEvent.class));
             case DEPOSIT_AMOUNT ->
@@ -87,7 +88,7 @@ public class CardProjection implements Projection {
     }
 
     private void handle(DepositAmountEvent event) {
-        var documentOptional = cardRepository.findByAggregateId(event.getAggregateId());
+        var documentOptional = cardRepository.findCardDocumentByAggregateId(event.getAggregateId());
 
         if (documentOptional.isEmpty())
             throw new CardNotFoundException(event.getAggregateId());
@@ -100,7 +101,7 @@ public class CardProjection implements Projection {
     }
 
     private void handle(WithdrawAmountEvent event) {
-        var documentOptional = cardRepository.findByAggregateId(event.getAggregateId());
+        var documentOptional = cardRepository.findCardDocumentByAggregateId(event.getAggregateId());
 
         if (documentOptional.isEmpty())
             throw new CardNotFoundException(event.getAggregateId());
@@ -114,16 +115,5 @@ public class CardProjection implements Projection {
         document.setBalance(newBalance);
         cardRepository.save(document);
         log.info("(DepositAmountEvent) balance withdrawn on document: {}", document);
-    }
-
-    private CardDocument cardDocumentFromAggregate(CardAggregate aggregate) {
-        return CardDocument.builder()
-                .aggregateId(aggregate.getId())
-                .currency(aggregate.getCurrency())
-                .CVC(aggregate.getCVC())
-                .expirationDate(aggregate.getExpirationDate())
-                .customerId(aggregate.getCustomerId())
-                .balance(aggregate.getBalance())
-                .build();
     }
 }

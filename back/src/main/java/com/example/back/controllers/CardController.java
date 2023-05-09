@@ -1,10 +1,15 @@
 package com.example.back.controllers;
 
+import com.example.back.DTO.CardDTO;
 import com.example.back.commands.CreateCardCommand;
 import com.example.back.commands.DepositAmountCommand;
 import com.example.back.commands.WithdrawAmountCommand;
 import com.example.back.es.Currency;
 import com.example.back.commands.CardCommandService;
+import com.example.back.queries.CardQueryService;
+import com.example.back.queries.GetCardBalanceByAggregateId;
+import com.example.back.queries.GetCardByAggregateId;
+import com.example.back.queries.GetCardByCustomerId;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -22,26 +27,33 @@ import java.util.UUID;
 public class CardController {
 
     private final CardCommandService commandService;
-//    private final CardQueryService queryService;
+    private final CardQueryService queryService;
 
-//    @GetMapping("{id}")
-//    public Card getCard(@PathVariable long id) {
-//        final var card = cardService.getCard(id);
-//        log.info("Get card result: {}", card);
-//        return cardService.getCard(id);
-//    }
+    @GetMapping("{aggregateId}")
+    public ResponseEntity<CardDTO> getCardByAggregateId(@PathVariable String aggregateId) {
+        var cardDTO = queryService.handle(new GetCardByAggregateId(aggregateId));
+        log.info("(getCardByAggregateId) get card: {}", cardDTO);
+        return ResponseEntity.ok(cardDTO);
+    }
 
-//    @GetMapping("/cardByCustomerId/{customerId}")
-//    public Card getCardByCustomerId(@PathVariable String customerId) {
-//        return cardService.getCardByCustomerId(customerId);
-//    }
+    @GetMapping("customer/{customerId}")
+    public ResponseEntity<CardDTO> getCardByCustomerId(@PathVariable String customerId) {
+        var cardDTO = queryService.handle(new GetCardByCustomerId(customerId));
 
-//    @GetMapping("all")
-//    public List<Card> getAllCards() {
-//        final var listOfCards = cardService.getAllCards();
-//        log.info("Get all cards result: {}", listOfCards);
-//        return listOfCards;
-//    }
+        if (cardDTO == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        log.info("(getCardByCustomerId) get card: {}", cardDTO);
+        return ResponseEntity.ok(cardDTO);
+    }
+
+    @GetMapping("{aggregateId}/balance")
+    public ResponseEntity<BigDecimal> getCardBalanceByAggregateId(@PathVariable String aggregateId) {
+        var balance = queryService.handle(new GetCardBalanceByAggregateId(aggregateId));
+        log.info("(getCardBalanceByAggregateId) card: {}, balance : {}", aggregateId, balance);
+        return ResponseEntity.ok(balance);
+    }
 
     @PostMapping("new")
     public ResponseEntity<String> createCard(@RequestParam Currency currency, @RequestParam String customerId) {
@@ -67,11 +79,4 @@ public class CardController {
         commandService.handle(new WithdrawAmountCommand(id, amount));
         return ResponseEntity.ok().build();
     }
-
-//    @GetMapping("{id}/balance")
-//    public double getBalance(@PathVariable long id) {
-//        final var balance = cardService.getBalance(id);
-//        log.info("Balance {} of card {}", balance, id);
-//        return cardService.getBalance(id);
-//    }
 }

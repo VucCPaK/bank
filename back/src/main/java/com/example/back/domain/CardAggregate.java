@@ -36,14 +36,15 @@ public class CardAggregate extends AggregateRoot {
 
     @Override
     public void when(Event event) {
-        switch (event.getEventType()) {
+        switch (EventType.valueOf(event.getEventType())) {
             case CREATE_CARD ->
                     handle(SerializeUtils.deserializeFromJsonBytes(event.getData(), CreateCardEvent.class));
             case DEPOSIT_AMOUNT ->
                     handle(SerializeUtils.deserializeFromJsonBytes(event.getData(), DepositAmountEvent.class));
             case WITHDRAW_AMOUNT ->
                     handle(SerializeUtils.deserializeFromJsonBytes(event.getData(), WithdrawAmountEvent.class));
-            default -> throw new InvalidEventTypeException(event.toString());
+            default ->
+                    throw new InvalidEventTypeException(event.toString());
         }
     }
 
