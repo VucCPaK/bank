@@ -1,13 +1,11 @@
 package com.example.back.es;
 
-import com.example.back.domain.CardAggregate;
 import com.example.back.repositories.EventRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -40,33 +38,15 @@ public class EventStore {
         return aggregate;
     }
 
-    public BigDecimal calculateBalance(String aggregateId) {
-        var aggregate = this.getAggregate(aggregateId, CardAggregate.class);
-
-        List<Event> eventsRelativeWithDepositOrWithdrawOperation =
-                this.loadEventsRelativeWithDepositOrWithdrawOperation(aggregateId);
-
-        eventsRelativeWithDepositOrWithdrawOperation.forEach(aggregate::raiseEvent);
-
-        log.info("(calculateBalance) balance: {} of aggregate: {}", aggregate.getBalance(), aggregate.getId());
-        return aggregate.getBalance();
-    }
-
-    private List<Event> loadEventsRelativeWithDepositOrWithdrawOperation(String aggregateId) {
+    public List<Event> loadEventsRelativeWithDepositOrWithdrawOperation(String aggregateId) {
+        // todo check if need a sort by timestamp
         List<Event> events = eventRepository.findAllDepositOrWithdrawOperationEventByAggregateId(aggregateId);
 
-        log.info("(loadEventsRelativeWithDepositOrWithdrawOperation) loaded events: {}", events);
+        log.info("(loadEventsRelativeWithDepositOrWithdrawOperation) loaded withdraw/deposit operation events: {}", events);
         return events;
     }
 
-    private List<Event> loadEvents(String aggregateId) {
-        List<Event> events = eventRepository.findAllByAggregateId(aggregateId);
-
-        log.info("(loadEvents) loaded events: {}", events);
-        return events;
-    }
-
-    private <T extends AggregateRoot> T getAggregate(String aggregateId, Class<T> clazz) {
+    private  <T extends AggregateRoot> T getAggregate(String aggregateId, Class<T> clazz) {
         try {
             return clazz
                     .getConstructor(String.class)
@@ -76,6 +56,13 @@ public class EventStore {
                  InvocationTargetException | NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private List<Event> loadEvents(String aggregateId) {
+        List<Event> events = eventRepository.findAllByAggregateId(aggregateId);
+
+        log.info("(loadEvents) loaded events: {}", events);
+        return events;
     }
 
     private void saveEvents(List<Event> events) {

@@ -1,15 +1,13 @@
 package com.example.back.controllers;
 
 import com.example.back.DTO.CardDTO;
+import com.example.back.DTO.TransactionsHistory;
 import com.example.back.commands.CreateCardCommand;
 import com.example.back.commands.DepositAmountCommand;
 import com.example.back.commands.WithdrawAmountCommand;
 import com.example.back.es.Currency;
 import com.example.back.commands.CardCommandService;
-import com.example.back.queries.CardQueryService;
-import com.example.back.queries.GetCardBalanceByAggregateId;
-import com.example.back.queries.GetCardByAggregateId;
-import com.example.back.queries.GetCardByCustomerId;
+import com.example.back.queries.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -53,6 +51,13 @@ public class CardController {
         var balance = queryService.handle(new GetCardBalanceByAggregateId(aggregateId));
         log.info("(getCardBalanceByAggregateId) card: {}, balance : {}", aggregateId, balance);
         return ResponseEntity.ok(balance);
+    }
+
+    @GetMapping("{aggregateId}/history")
+    public ResponseEntity<TransactionsHistory> getTransactionsHistory(@PathVariable String aggregateId) {
+        var history = queryService.handle(new GetTransactionsHistory(aggregateId));
+        log.info("(getTransactionsHistory) history: {}", history);
+        return ResponseEntity.ok(history);
     }
 
     @PostMapping("new")
