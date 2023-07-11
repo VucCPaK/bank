@@ -49,9 +49,15 @@ spring:
               - openid
         provider:
           keycloak:
-            issuer-uri: http://localhost:8080/auth/realms/bank
+            issuer-uri: http://localhost:8080/realms/bank
             user-name-attribute: preferred_username
 
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8080/auth/realms/bank
+          issuer-uri: http://localhost:8080/realms/bank
+
+  application:
+    name: back_java_cqrs_and_event-sourcing
+
+  zipkin:
+    base-url: http://localhost:8081
